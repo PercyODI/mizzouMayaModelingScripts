@@ -1,6 +1,7 @@
 import maya.cmds as cmds;
 import sys;
 import re;
+import pythonScripts.PhHelpers.curveHelpers as curveHelpers;
 
 # Find the currently selected object
 selection = cmds.ls(selection=True);
@@ -31,15 +32,15 @@ for joint in selection:
 for location in legsDict:
 	# Create the ikHandles for the leg
 	AnkleIK = cmds.ikHandle(
-		name="AnkleIK",
+		name=location + "_AnkleIK",
 		startJoint=legsDict[location]["Hip"],
 		endEffector=legsDict[location]["Ankle"])
 	BallIK = cmds.ikHandle(
-		name="BallIK",
+		name=location + "_BallIK",
 		startJoint=legsDict[location]["Ankle"],
 		endEffector=legsDict[location]["Ball"])
 	ToeIK = cmds.ikHandle(
-		name="ToeIK",
+		name=location + "_ToeIK",
 		startJoint=legsDict[location]["Ball"],
 		endEffector=legsDict[location]["Toe"])
 
@@ -65,7 +66,7 @@ for location in legsDict:
 
 	# Create new joints at specific positions
 	RFHeel = cmds.joint(
-		name="RFHeel",
+		name=location + "_RFHeel",
 		absolute=True,
 		position=(
 			anklePosition[0], # X Position
@@ -73,19 +74,21 @@ for location in legsDict:
 			anklePosition[2]) # Z Position
 		)
 	RFToe = cmds.joint(
-		name="RFToe",
+		name=location + "_RFToe",
 		absolute=True,
 		position=toePosition)
 	RFBall = cmds.joint(
-		name="RFBall",
+		name=location + "_RFBall",
 		absolute=True,
 		position=ballPosition)
 	RFAnkle = cmds.joint(
-		name="RFAnkle",
+		name=location + "_RFAnkle",
 		absolute=True,
 		position=anklePosition)
 
+	# *IK[0] is the IKHandle. This leaves the endEffector where it was set originally
 	cmds.parent(ToeIK[0], RFToe)
 	cmds.parent(BallIK[0], RFBall)
 	cmds.parent(AnkleIK[0], RFAnkle)
 
+cmds.curve(d=3, p=curveHelpers.getCurvePointsByType('foot'))
