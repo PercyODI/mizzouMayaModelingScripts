@@ -1,0 +1,19 @@
+global proc float[] getAverageNormal(string $vertex) {
+    float $result[] = {0.0, 0.0, 0.0};
+    float $normals[] = `polyNormalPerVertex -query -normalXYZ $vertex`;
+    for($i = 0; $i < size($normals); $i += 3) {
+        $result[0] += $normals[$i];
+        $result[1] += $normals[$i + 1];
+        $result[2] += $normals[$i + 2];
+    }
+    
+    // int $normalCount = size($normals) / 3;
+    
+    //$result[0] /= $normalCount;
+    //$result[1] /= $normalCount; 
+    //$result[2] /= $normalCount;
+    
+    normalize($result);
+    
+    return $result; 
+}

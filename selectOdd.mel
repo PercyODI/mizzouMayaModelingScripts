@@ -1,0 +1,6 @@
+global proc selectOdd() {
+    string $selection[] = `ls -selection -flatten`;
+    for($i = 0; $i < size($selection); $i += 2) {
+        select -d $selection[$i];
+    }
+}

@@ -1,0 +1,26 @@
+global proc string[] reservoirSample(string $values[], int $count) {
+	string $reservoir[];
+	
+	// Fill the reservoir array
+	for($i = 0; $i < $count; $i++) {
+		$reservoir[$i] = $values[$i];
+	}
+
+	int $j = 0;
+	// Replace elements with gradually decreasing probability
+	for($i = $count; $i < size($values); $i++) {
+		$j = floor(rand(0, $i));
+		if($j < $count) {
+			$reservoir[$j] = $values[$i];
+		}
+	}
+
+	return $reservoir;
+}
+
+string $testVals[] = `ls -sl -flatten`;
+string $returnTest[] = reservoirSample($testVals, 10);
+
+select -clear;
+select $returnTest;
+print $returnTest;

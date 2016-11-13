@@ -1,0 +1,5 @@
+global proc fractalTriangle(int $fractalDepth, int $triangleStackHeight) {
+  for($i = 0; $i < $fractalDepth; $i++) {
+    pyramid(0, 0, $triangleStackHeight);
+  }
+}

@@ -1,0 +1,21 @@
+global proc skipSelect(int $keep, int $skip) {
+    string $selection[] = `ls -sl -flatten`;
+    if($keep < 0 || $skip < 0) {
+        error("Neither Parameter Can Be Negative");
+    }
+    
+    if($keep == 0 && $skip == 0) {
+        error("Both Parameters Cannot Be 0");
+    }
+    
+    int $i = $keep;
+    while($i < size($selection)) {
+        $skipTill = $i + $skip;
+        for(; $i < $skipTill && $i < size($selection); $i++) {
+            select -d $selection[$i];
+        }
+        $i += $keep;
+    }
+}
+
+skipSelect(0, 1);

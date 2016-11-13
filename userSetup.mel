@@ -1,0 +1,9 @@
+//global string $gMainMenu;
+
+string $menu = `menu -label "My Tools" -p "MayaWindow" "myToolsMenu"`;
+menuItem -label "Select Odd" -c "selectOdd()" -p $menu "selectOddMenuItem";
+menuItem -label "Reservoir Sample Select 60%" -c "reservoirSample60()" -p $menu "reservoirSampleMenuItem";
+menuItem -label "Duplicate At Points" -c "duplicateAtPoints" -p $menu "duplicateAtPointsMenuItem";
+menuItem -label "Duplicate and Align At Points" -c "duplicateAndAlignAtPoints" -p $menu "duplicateAndAlignAtPointsMenuitem";
+menuItem -label "Pyramid Stack 5" -c "pyramid(0, 0, 5)" -p $menu "pyramidStack5MenuItem";
+menuItem -label "Fractal Triangle (4 Depth)" -c "fractalTriangle(4, 3)" -p $menu "fractalTriangle4Depth";

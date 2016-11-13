@@ -1,0 +1,6 @@
+global proc reservoirSample60() {
+        string $selection[] = `ls -sl -flatten`;
+        string $reservoirSelection[] = reservoirSample($selection, floor(size($selection) * 0.6));
+        select -clear;
+        select $reservoirSelection;
+}

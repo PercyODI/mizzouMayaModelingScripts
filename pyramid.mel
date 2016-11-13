@@ -1,0 +1,30 @@
+global proc pyramid(float $gutterHeight, float $gutterWidth, int $stackHeight) {
+    //Set objects to create pyramid from
+    string $object[] = `ls -sl -transforms`;
+    
+    // Start array to collect all objects created in this proc
+    string $pyramidObjects[];
+    appendStringArray($pyramidObjects, $object, size($object));
+    
+    // Find Bounding Box of Object and add the desired gutters
+    float $objBbox[] = `exactWorldBoundingBox $object`;
+    float $objHeight = $objBbox[4] - $objBbox[1] + $gutterHeight;
+    float $objWidth = $objBbox[3] - $objBbox[0] + $gutterWidth;
+    
+    // Prep original object by moving to the side
+    move -relative -worldSpace (-$objWidth) 0 0 $object;
+    
+    // Creates each layer from bottom to top
+    for($i = $stackHeight; $i > 1; $i--) {
+        for($j = 1; $j <= $i; $j++) {
+            string $newObj[] = `duplicate -rr $object`;
+            move -relative -worldSpace ($objWidth * $j) 0 0 $newObj;
+            appendStringArray($pyramidObjects, $newObj, size($newObj));
+        }
+        move -relative -worldSpace ($objWidth / 2) $objHeight 0 $object;
+    }
+    
+    move -relative -worldSpace $objWidth 0 0 $object;
+    
+    select $pyramidObjects;
+}

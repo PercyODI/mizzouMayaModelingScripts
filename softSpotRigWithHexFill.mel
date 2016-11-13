@@ -1,0 +1,94 @@
+proc connectAttribute(string $g, string $l, string $attr) {
+    connectAttr ($g + "." + $attr) ($l + "." + $attr);
+}
+
+global proc softSpotRigWithHexFill(int $numLights) {
+    // Create group
+    $group = `group -em -n ssRig`;
+    
+    //TODO: Allow user to imput number of lights, possibly even radius!
+    
+    
+    // Intensity
+    addAttr -shortName intensity -defaultValue 1.0 -minValue 0.0 -maxValue 10 $group;
+    
+    // Color
+    addAttr -longName "color" -at float3 -usedAsColor $group;
+        addAttr -longName ("colorR") -at "float" -defaultValue 1.0 -p "color" $group;
+        addAttr -longName ("colorG") -at "float" -defaultValue 1.0 -p "color" $group;
+        addAttr -longName ("colorB") -at "float" -defaultValue 1.0 -p "color" $group;
+    
+    // Emit Diffuse
+    addAttr -shortName "emitDiffuse" -at bool -defaultValue true $group;
+    
+    // Emit Specular
+    addAttr -shortName "emitSpecular" -at bool -defaultValue true $group;
+    // Decay Rate
+    addAttr -shortName "decayRate" -at enum -enumName "No Decay:Linear:Quadratic:Cubic" -defaultValue 0 $group;
+    
+    // Cone Angle
+    addAttr -shortName "coneAngle" -at "float" -minValue 0.006 -maxValue 179.994 -defaultValue 40.0 $group;
+    
+    // Penumbra Angle
+    addAttr -shortName "penumbraAngle" -at "float" -minValue -10.0 -maxValue 10.0 -defaultValue 0.0 $group;
+    
+    // Dropoff
+    addAttr -shortName "dropoff" -at "float" -minValue 0.0 -maxValue 255.0 -defaultValue 0.0 $group;
+    
+    // DMap Shadows
+    addAttr -shortName "useDepthMapShadows" -at bool -defaultValue true $group;
+    
+    // DMap Resolution
+    addAttr -shortName "dmapResolution" -at short -minValue 16 -maxValue 8192 -defaultValue 512 $group;
+    
+    // DMap Filter Size
+    addAttr -shortName "dmapFilterSize" -at short -minValue 0 -maxValue 5 -defaultValue 1 $group;
+    
+    // Make and Move Lights
+    // Round is float(x + 0.5);
+    int $numPerSide = int(sqrt($numLights) + 0.5);
+    int $currLevel = 0; // Start at 0. Will set to 1 in first light.
+    for($i = 0; $i < $numLights; $i++) {
+        // Create light
+        string $light = `spotLight -ca 40.0 -p 0.0 -i 0`;
+        parent $light $group;
+        
+        // Move to Next Level if need be
+        if($i % $numPerSide == 0) {
+            $currLevel++;
+        }
+        
+        // Set Y
+        float $yVal = (tand(240) * 0.5) * ($currLevel - 1);
+        
+        // Set X
+        float $startX = 0;
+        if($currLevel % 2 == 1) { 
+            $startX = 0; // First Level                
+        } else { 
+            $startX = 0.5;
+        }
+        
+        $xVal = $startX + ($i % $numPerSide );
+        
+        // Move Light
+        move -localSpace -xy $xVal $yVal 0 $light;
+        
+        connectAttribute($group, $light, "intensity");
+        connectAttribute($group, $light, "color");
+        connectAttribute($group, $light, "emitDiffuse");
+        connectAttribute($group, $light, "emitSpecular");
+        connectAttribute($group, $light, "decayRate");
+        connectAttribute($group, $light, "coneAngle");
+        connectAttribute($group, $light, "penumbraAngle");
+        connectAttribute($group, $light, "dropoff");
+        connectAttribute($group, $light, "useDepthMapShadows");
+        connectAttribute($group, $light, "dmapResolution");
+        //connectAttribute($group, $light, "dmapFilterSize");
+        
+    }
+    
+    // Center pivot of group
+    xform -cp $group;
+    select $group;
+}

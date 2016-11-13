@@ -1,0 +1,27 @@
+global proc duplicateAndAlignAtPoints() {
+    //Get two objects form selection list
+    string $selection[] = `ls -sl`;
+    //Convert first object to verticies
+    
+    $lastSelection = `ls -tail 1 $selection`;
+    int $numFirstSel = size($selection) - 1;
+    $firstSelection = `ls -head $numFirstSel $selection`;
+    
+    string $verticies[] = `polyListComponentConversion -toVertex $firstSelection`;
+    $verticies = `ls -flatten $verticies`;
+    
+    //For each vertex
+    for($vert in $verticies) {
+        float $vertPos[] = `pointPosition -world $vert`;
+        //Copy second object
+        $newObj = `duplicate $lastSelection`;
+        //Move copied object to vertex position
+        move -worldSpace -absolute -rotatePivotRelative $vertPos[0] $vertPos[1] $vertPos[2] $newObj;
+        
+        //Find Normal and Rotate
+        float $vertNormal[] = getAverageNormal($vert);
+        float $angles[] = `angleBetween -euler -v1 0 1 0 -v2 $vertNormal[0] $vertNormal[1] $vertNormal[2]`;
+        rotate $angles[0] $angles[1] $angles[2] $newObj;
+    }
+    
+}

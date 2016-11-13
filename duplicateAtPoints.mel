@@ -1,0 +1,21 @@
+global proc duplicateAtPoints() {
+    //Get two objects form selection list
+    string $selection[] = `ls -sl`;
+    //Convert first object to verticies
+    
+    $lastSelection = `ls -tail 1 $selection`;
+    int $numFirstSel = size($selection) - 1;
+    $firstSelection = `ls -head $numFirstSel $selection`;
+    
+    string $verticies[] = `polyListComponentConversion -toVertex $firstSelection`;
+    $verticies = `ls -flatten $verticies`;
+    
+    //For each vertex
+    for($vert in $verticies) {
+        float $vertPos[] = `pointPosition -world $vert`;
+        //Copy second object
+        $newObj = `duplicate $lastSelection`;
+        //Move copied object to vertex position
+        move -worldSpace $vertPos[0] $vertPos[1] $vertPos[2] $newObj;
+    }
+}
