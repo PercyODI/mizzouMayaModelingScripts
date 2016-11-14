@@ -77,11 +77,16 @@ for location in legsDict:
 			ballPosition[1],  # Y Position
 			anklePosition[2]) # Z Position
 		)
+	# Save position of Heel in same format as other original joints
 	heelPosition = cmds.xform(
 		RFHeel,
 		query=True,
 		worldSpace=True,
 		translation=True)
+
+	# Freeze Transformations on the RFHeel
+	cmds.makeIdentity(apply=True)
+
 	RFToe = cmds.joint(
 		name=location + "_RFToe",
 		absolute=True,
@@ -107,20 +112,151 @@ for location in legsDict:
 			ws=True, 
 			per=True, 
 			p=[ (toePosition[0], 		toePosition[1], 	toePosition[2] + 1),		# In front of toe
-				(toePosition[0] + 1.5, 	toePosition[1], 	toePosition[2]),			# Left of toe
+				(toePosition[0] + 1.25, toePosition[1], 	toePosition[2]),			# Left of toe
 				(ballPosition[0] + 1, 	ballPosition[1], 	ballPosition[2]),			# Left of Ball
 				(heelPosition[0] + 1, 	heelPosition[1], 	heelPosition[2]),			# Left of Heel
 				(heelPosition[0], 		heelPosition[1], 	heelPosition[2] - 1),		# Behind Heel
 				(heelPosition[0] - 1, 	heelPosition[1], 	heelPosition[2]),			# Right of Heel
 				(ballPosition[0] - 1, 	ballPosition[1], 	ballPosition[2]),			# Right of Ball
-				(toePosition[0] - 1.5, 	toePosition[1], 	toePosition[2]),			# Right of toe
+				(toePosition[0] - 1.25, toePosition[1], 	toePosition[2]),			# Right of toe
 				(toePosition[0], 		toePosition[1], 	toePosition[2] + 1),		# In front of toe
-				(toePosition[0] + 1.5, 	toePosition[1], 	toePosition[2]),			# Left of toe
+				(toePosition[0] + 1.25, toePosition[1], 	toePosition[2]),			# Left of toe
 				(ballPosition[0] + 1, 	ballPosition[1], 	ballPosition[2])],			# Left of Ball
 			k=[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), 
 		location + "_FootControl");
 
+	# Set the pivot from origin to center of curve
+	cmds.xform(controlCurve, centerPivots=True)
+	# Parent the Reverse Foot to the control curve
 	cmds.parent(RFHeel, controlCurve);
 
+	# Add attributes to control curve
+
+	# Tap attribute
+	cmds.addAttr(
+		controlCurve,
+		longName="tap", 
+		attributeType="float",
+		defaultValue=0.0,
+		minValue=-5.0,
+		maxValue=10.0)
+
+	# TipToe attribute
+	cmds.addAttr(
+		controlCurve,
+		longName="tipToe",
+		attributeType="float",
+		defaultValue=0.0,
+		minValue=-5.0,
+		maxValue=10.0)
+
+	# ballLift attribute
+	cmds.addAttr(
+		controlCurve,
+		longName="ballLift",
+		attributeType="float",
+		defaultValue=0.0,
+		minValue=-5.0,
+		maxValue=10.0)
+
+	# ballLift attribute
+	cmds.addAttr(
+		controlCurve,
+		longName="legLift",
+		attributeType="float",
+		defaultValue=0.0,
+		minValue=-5.0,
+		maxValue=10.0)
+
+	# Set driven keys to control curve attributes 
+	# TODO: Refactor setting these driven keys into their own function / module
+
+	# Tap Driven Keys
+	cmds.setDrivenKeyframe(    ### This one must be first for tap ###
+		RFHeel + ".rx",
+		currentDriver=controlCurve + ".tap",
+		driverValue=0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFHeel + ".rx",
+		currentDriver=controlCurve + ".tap",
+		driverValue=-5.0,
+		value=45.0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFHeel + ".rx",
+		currentDriver=controlCurve + ".tap",
+		driverValue=10.0,
+		value=-60.0,
+		inTangentType="linear",
+		outTangentType="linear")
+
+	# Tip Toe Driven Keys
+	cmds.setDrivenKeyframe(    ### This one must be first for tipToe ###
+		RFToe + ".rx",
+		currentDriver=controlCurve + ".tipToe",
+		driverValue=0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFToe + ".rx",
+		currentDriver=controlCurve + ".tipToe",
+		driverValue=-5.0,
+		value=-50.0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFToe + ".rx",
+		currentDriver=controlCurve + ".tipToe",
+		driverValue=10.0,
+		value=90.0,
+		inTangentType="linear",
+		outTangentType="linear")
+
+	# Ball Lift Driven Keys
+	cmds.setDrivenKeyframe(    ### This one must be first for ballLift ###
+		RFBall + ".rx",
+		currentDriver=controlCurve + ".ballLift",
+		driverValue=0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFBall + ".rx",
+		currentDriver=controlCurve + ".ballLift",
+		driverValue=-5.0,
+		value=-45.0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFBall + ".rx",
+		currentDriver=controlCurve + ".ballLift",
+		driverValue=10.0,
+		value=65.0,
+		inTangentType="linear",
+		outTangentType="linear")
+
+	# Leg Lift Driven Keys
+	cmds.setDrivenKeyframe(    ### This one must be first for legLift ###
+		RFHeel + ".ty",
+		currentDriver=controlCurve + ".legLift",
+		driverValue=0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFHeel + ".ty",
+		currentDriver=controlCurve + ".legLift",
+		driverValue=-5.0,
+		value=-5.0,
+		inTangentType="linear",
+		outTangentType="linear")
+	cmds.setDrivenKeyframe(
+		RFHeel + ".ty",
+		currentDriver=controlCurve + ".legLift",
+		driverValue=10.0,
+		value=10.0,
+		inTangentType="linear",
+		outTangentType="linear")
 
 # cmds.curve(d=3, p=curveHelpers.getCurvePointsByType('foot'))
