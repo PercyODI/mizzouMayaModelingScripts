@@ -10,13 +10,24 @@ class PhJoint(object):
 
 	def getPosition():
 		if position == None:
-			findPos()
+			getPositionFromMaya()
 		return position
 
-	def findPosition(worldSpace=True):
+	def getPositionFromMaya(worldSpace=True):
 		self.position =  cmds.xform(
-				self.name,
-				query=True,
-				worldSpace=worldSpace,
-				translation=True)
+			self.name,
+			query=True,
+			worldSpace=worldSpace,
+			translation=True)
 
+	def getXPosition():
+		position = self.getPosition();
+		return position[0]
+
+	def getYPosition():
+		position = self.getPosition();
+		return position[1]
+
+	def getZPosition():
+		position = self.getPosition();
+		return position[2]
