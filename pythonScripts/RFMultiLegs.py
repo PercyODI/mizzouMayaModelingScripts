@@ -3,6 +3,10 @@ import sys;
 import re;
 import pythonScripts.PhHelpers.curveHelpers as curveHelpers;
 
+### Important!                                                    ###
+# Make sure that the character is facing in the Z axis, until fixed #
+
+
 # Find the currently selected object
 selection = cmds.ls(selection=True);
 # Add all of the currently selected object's decendants to selection
@@ -73,6 +77,11 @@ for location in legsDict:
 			ballPosition[1],  # Y Position
 			anklePosition[2]) # Z Position
 		)
+	heelPosition = cmds.xform(
+		RFHeel,
+		query=True,
+		worldSpace=True,
+		translation=True)
 	RFToe = cmds.joint(
 		name=location + "_RFToe",
 		absolute=True,
@@ -91,4 +100,27 @@ for location in legsDict:
 	cmds.parent(BallIK[0], RFBall)
 	cmds.parent(AnkleIK[0], RFAnkle)
 
-cmds.curve(d=3, p=curveHelpers.getCurvePointsByType('foot'))
+	# Create the control curve
+	controlCurve = cmds.rename(
+		cmds.curve(
+			d=3, 
+			ws=True, 
+			per=True, 
+			p=[ (toePosition[0], 		toePosition[1], 	toePosition[2] + 1),		# In front of toe
+				(toePosition[0] + 1.5, 	toePosition[1], 	toePosition[2]),			# Left of toe
+				(ballPosition[0] + 1, 	ballPosition[1], 	ballPosition[2]),			# Left of Ball
+				(heelPosition[0] + 1, 	heelPosition[1], 	heelPosition[2]),			# Left of Heel
+				(heelPosition[0], 		heelPosition[1], 	heelPosition[2] - 1),		# Behind Heel
+				(heelPosition[0] - 1, 	heelPosition[1], 	heelPosition[2]),			# Right of Heel
+				(ballPosition[0] - 1, 	ballPosition[1], 	ballPosition[2]),			# Right of Ball
+				(toePosition[0] - 1.5, 	toePosition[1], 	toePosition[2]),			# Right of toe
+				(toePosition[0], 		toePosition[1], 	toePosition[2] + 1),		# In front of toe
+				(toePosition[0] + 1.5, 	toePosition[1], 	toePosition[2]),			# Left of toe
+				(ballPosition[0] + 1, 	ballPosition[1], 	ballPosition[2])],			# Left of Ball
+			k=[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), 
+		location + "_FootControl");
+
+	cmds.parent(RFHeel, controlCurve);
+
+
+# cmds.curve(d=3, p=curveHelpers.getCurvePointsByType('foot'))
