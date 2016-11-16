@@ -1,32 +1,33 @@
 import maya.cmds as cmds
 import sys
-import pythonScripts.PhClasses.PhSkeleton.PhJoint as PhJoint
+
+from pythonScripts.PhClasses.PhSkeleton.PhJoint import PhJoint
+
 
 class PhLeg(object):
-	def __init__(
-		self, hipName = None, kneeName = None, ankleName = None, ballname = None, toeName = None):
-		self.hip = hipName != None ? PhJoint(hipName) : None
-		self.knee = kneeName != None ? PhJoint(kneeName) : None
-		self.ankle = ankleName != None ? PhJoint(ankleName) : None
-		self.ball = ballName != None ? PhJoint(ballName) : None
-		self.toe = toeName != None ? PhJoint(toeName) : None
+    def __init__(self):
+        self.hip = None
+        self.knee = None
+        self.ankle = None
+        self.ball = None
+        self.toe = None
 
-		self.rfHeel = None
-		self.rfToe = None
-		self.rfBall = None
-		self.rfAnkle = None
+        self.rfHeel = None
+        self.rfToe = None
+        self.rfBall = None
+        self.rfAnkle = None
 
-	def setHip(hipName):
-		self.hip = PhJoint(hipName)
+    def setHip(self, hipName):
+        self.hip = PhJoint(hipName)
 
-	def setKnee(kneeName):
-		self.knee = PhJoint(kneeName)
+    def setKnee(self, kneeName):
+        self.knee = PhJoint(kneeName)
 
-	def setAnkle(ankleName):
-		self.hip = PhJoint(ankleName)
+    def setAnkle(self, ankleName):
+        self.hip = PhJoint(ankleName)
 
-	def setBall(ballName):
-		self.knee = PhJoint(ballName)
+    def setBall(self, ballName):
+        self.knee = PhJoint(ballName)
 
-	def setToe(toeName):
-		self.knee = PhJoint(toeName)
+    def setToe(self, toeName):
+        self.knee = PhJoint(toeName)
