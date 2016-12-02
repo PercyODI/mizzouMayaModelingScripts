@@ -54,25 +54,38 @@ def armRig():
 		cmds.orientConstraint(armFk["Forearm"], armIk["Forearm"], armsDict[location]["Forearm"])
 		cmds.orientConstraint(armFk["Wrist"], armIk["Wrist"], armsDict[location]["Wrist"])
 
+		# Create FK IK Locator
+		
+
+		fkIkLocator = cmds.spaceLocator(
+			absolute=True,
+			position=(
+				wristPosition[0],
+				wristPosition[1],
+				wristPosition[2]),
+			name=location + "_fkIkLocator");
+
+		cmds.parentConstraint(armsDict[location]["Wrist"], fkIkLocator)
+
 		# Set connections to modify weights
 
 		# Creates IK
-		ForearmIK = cmds.ikHandle(
-			name=location + "_ForearmIK",
-			startJoint=armIk["Shoulder"],
-			endEffector=armIk["Forearm"])
-
-		wristPosition = cmds.xform(
+		ikWristPosition = cmds.xform(
 			armIk["Wrist"],
 			query=True,
 			worldSpace=True,
 			translation=True)
 
+		ForearmIK = cmds.ikHandle(
+			name=location + "_ForearmIK",
+			startJoint=armIk["Shoulder"],
+			endEffector=armIk["Forearm"])
+
 		# Move EndEffector to Wrist
 		cmds.move(
-			wristPosition[0],
-			wristPosition[1],
-			wristPosition[2],
+			ikWristPosition[0],
+			ikWristPosition[1],
+			ikWristPosition[2],
 			ForearmIK[1] + ".rotatePivot", # Would be great in an IK Class...
 			absolute=True,
 			worldSpace=True,)
