@@ -4,7 +4,11 @@ import re;
 import pythonScripts.PhHelpers.curveHelpers as curveHelpers;
 
 
-def reverseFootLock():
+def reverseFootLock(modelScale = None):
+    # Set up default parameters
+    if modelScale is None:
+        modelScale = 1
+
     ### Important!                                                    ###
     # Make sure that the character is facing in the Z axis, until fixed #
 
@@ -40,7 +44,8 @@ def reverseFootLock():
         AnkleIK = cmds.ikHandle(
             name=location + "_AnkleIK",
             startJoint=legsDict[location]["Hip"],
-            endEffector=legsDict[location]["Ankle"])
+            endEffector=legsDict[location]["Ankle"],
+            solver="ikRPsolver")
         BallIK = cmds.ikHandle(
             name=location + "_BallIK",
             startJoint=legsDict[location]["Ankle"],
@@ -54,6 +59,11 @@ def reverseFootLock():
 
         # Find the positions of ankle, ball, and toe joints
         cmds.select(clear=True);
+        kneePosition = cmds.xform(
+            legsDict[location]["Knee"],
+            query=True,
+            worldSpace=True,
+            translation=True)
         anklePosition = cmds.xform(
             legsDict[location]["Ankle"],
             query=True,
@@ -113,17 +123,17 @@ def reverseFootLock():
                 d=3,
                 ws=True,
                 per=True,
-                p=[(toePosition[0], toePosition[1], toePosition[2] + 1),  # In front of toe
-                   (toePosition[0] + 1.25, toePosition[1], toePosition[2]),  # Left of toe
-                   (ballPosition[0] + 1, ballPosition[1], ballPosition[2]),  # Left of Ball
-                   (heelPosition[0] + 1, heelPosition[1], heelPosition[2]),  # Left of Heel
-                   (heelPosition[0], heelPosition[1], heelPosition[2] - 1),  # Behind Heel
-                   (heelPosition[0] - 1, heelPosition[1], heelPosition[2]),  # Right of Heel
-                   (ballPosition[0] - 1, ballPosition[1], ballPosition[2]),  # Right of Ball
-                   (toePosition[0] - 1.25, toePosition[1], toePosition[2]),  # Right of toe
-                   (toePosition[0], toePosition[1], toePosition[2] + 1),  # In front of toe
-                   (toePosition[0] + 1.25, toePosition[1], toePosition[2]),  # Left of toe
-                   (ballPosition[0] + 1, ballPosition[1], ballPosition[2])],  # Left of Ball
+                p=[(toePosition[0], toePosition[1], toePosition[2] + (1 * modelScale)),  # In front of toe
+                   (toePosition[0] + (1.25 * modelScale), toePosition[1], toePosition[2]),  # Left of toe
+                   (ballPosition[0] + (1 * modelScale), ballPosition[1], ballPosition[2]),  # Left of Ball
+                   (heelPosition[0] + (1 * modelScale), heelPosition[1], heelPosition[2]),  # Left of Heel
+                   (heelPosition[0], heelPosition[1], heelPosition[2] - (1 * modelScale)),  # Behind Heel
+                   (heelPosition[0] - (1 * modelScale), heelPosition[1], heelPosition[2]),  # Right of Heel
+                   (ballPosition[0] - (1 * modelScale), ballPosition[1], ballPosition[2]),  # Right of Ball
+                   (toePosition[0] - (1.25 * modelScale), toePosition[1], toePosition[2]),  # Right of toe
+                   (toePosition[0], toePosition[1], toePosition[2] + (1 * modelScale)),  # In front of toe
+                   (toePosition[0] + (1.25 * modelScale), toePosition[1], toePosition[2]),  # Left of toe
+                   (ballPosition[0] + (1 * modelScale), ballPosition[1], ballPosition[2])],  # Left of Ball
                 k=[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
             location + "_FootControl");
 
@@ -131,6 +141,23 @@ def reverseFootLock():
         cmds.xform(controlCurve, centerPivots=True)
         # Parent the Reverse Foot to the control curve
         cmds.parent(RFHeel, controlCurve);
+
+        # Create cube and contraint ankleIk pole vector to it
+        kneeConstraintCube = cmds.polyCube(
+            name=location + "_kneeConstraintCube",
+            depth= (0.75 * modelScale),
+            height = (0.75 * modelScale),
+            width = (0.75 * modelScale))[0]
+
+        cmds.move(
+            kneePosition[0],
+            kneePosition[1],
+            kneePosition[2] + (3 * modelScale),
+            kneeConstraintCube,
+            absolute=True,
+            worldSpace=True)
+
+        cmds.poleVectorConstraint(kneeConstraintCube, AnkleIK[0])
 
         # Add attributes to control curve
 

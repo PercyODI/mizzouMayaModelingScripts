@@ -3,7 +3,12 @@ import sys
 import re
 
 
-def armRig():
+def armRig(modelScale = None):
+    # Set up default parameters
+    if modelScale is None:
+        modelScale = 1
+
+
     # Include an FK and IK arm control 0.0
     selection = cmds.ls(selection=True)
     selection.extend(cmds.listRelatives(selection, allDescendents=True))
@@ -104,14 +109,14 @@ def armRig():
         ## Create a Cube
         elbowConstraintCube = cmds.polyCube(
             name=location + "_elbowConstraintCube",
-            depth=0.5,
-            height=0.5,
-            width=0.5)[0]
+            depth= (0.75 * modelScale),
+            height = (0.75 * modelScale),
+            width = (0.75 * modelScale))[0]
 
         cmds.move(
             ikElbowPosition[0],
             ikElbowPosition[1],
-            ikElbowPosition[2] - 3,
+            ikElbowPosition[2] - (3 * modelScale),
             elbowConstraintCube,
             absolute=True,
             worldSpace=True)
@@ -216,6 +221,3 @@ def armRig():
             absolute=True,
             worldSpace=True
         )
-
-
-armRig()
