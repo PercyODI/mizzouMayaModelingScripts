@@ -157,6 +157,8 @@ def reverseFootLock(modelScale = None):
             absolute=True,
             worldSpace=True)
 
+        cmds.setAttr(kneeConstraintCube, 0)
+
         cmds.poleVectorConstraint(kneeConstraintCube, AnkleIK[0])
 
         # Add attributes to control curve

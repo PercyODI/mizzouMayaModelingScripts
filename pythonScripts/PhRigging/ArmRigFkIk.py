@@ -121,6 +121,9 @@ def armRig(modelScale = None):
             absolute=True,
             worldSpace=True)
 
+        ### Hide Cube in Render
+        cmds.setAttr(elbowConstraintCube, 0)
+
         ## Constraint rotate plane to cube
         cmds.poleVectorConstraint(elbowConstraintCube, ForearmIK[0])
 
