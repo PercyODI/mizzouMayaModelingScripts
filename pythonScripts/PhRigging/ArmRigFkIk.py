@@ -122,7 +122,8 @@ def armRig(modelScale = None):
             worldSpace=True)
 
         ### Hide Cube in Render
-        cmds.setAttr(elbowConstraintCube, 0)
+        print elbowConstraintCube + ".primaryVisibility"
+        cmds.setAttr(elbowConstraintCube + ".primaryVisibility", 0)
 
         ## Constraint rotate plane to cube
         cmds.poleVectorConstraint(elbowConstraintCube, ForearmIK[0])
@@ -165,7 +166,7 @@ def armRig(modelScale = None):
         for name in orientConstraintDict:
             cmds.connectAttr(
                 fkIkLocator + ".fkToIk",
-                orientConstraintDict[name] + "." + armIk[name] + "W1",
+                orientConstraintDict[name] + "." + armIk[name] + "W1"
             )
 
             reverseShoulder = cmds.createNode("reverse")

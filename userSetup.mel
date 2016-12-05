@@ -7,3 +7,4 @@ menuItem -label "Duplicate At Points" -c "duplicateAtPoints" -p $menu "duplicate
 menuItem -label "Duplicate and Align At Points" -c "duplicateAndAlignAtPoints" -p $menu "duplicateAndAlignAtPointsMenuitem";
 menuItem -label "Pyramid Stack 5" -c "pyramid(0, 0, 5)" -p $menu "pyramidStack5MenuItem";
 menuItem -label "Fractal Triangle (4 Depth)" -c "fractalTriangle(4, 3)" -p $menu "fractalTriangle4Depth";
+menuItem -lable "SoftSpot Hex (18)" -c "softSpotRigWithHexFill(18)" -p $menu "softSpotHex18";
